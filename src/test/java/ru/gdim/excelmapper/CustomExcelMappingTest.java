@@ -12,7 +12,7 @@ import ru.gdim.excelmapper.excel.row.MappedRow;
 import ru.gdim.excelmapper.excel.row.RowStatus;
 import ru.gdim.excelmapper.excel.workbook.WorkbookFactory;
 import ru.gdim.excelmapper.excel.workbook.XSSFWorkbookFactory;
-import ru.gdim.excelmapper.exception.ColumnHeadersNotFoundException;
+import ru.gdim.excelmapper.exception.ExcelMapperException;
 import ru.gdim.excelmapper.mapper.MappedResult;
 import ru.gdim.excelmapper.mapper.driver.ExcelMappingDriver;
 
@@ -45,7 +45,7 @@ class CustomExcelMappingTest {
     }
 
     @Test
-    void sampleImportDriver() throws ColumnHeadersNotFoundException, IOException, InvalidFormatException {
+    void sampleImportDriver() throws ExcelMapperException, IOException, InvalidFormatException {
 
         MappedResult<SampleParsedRow> result = excelMapper.read(file, "Лист1");
         assertNotNull(result);

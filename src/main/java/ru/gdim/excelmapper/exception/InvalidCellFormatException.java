@@ -8,7 +8,7 @@ import org.apache.poi.ss.util.CellReference;
  * Некорректный формат excel ячейки
  */
 @Getter
-public final class InvalidCellFormatException extends Exception {
+public final class InvalidCellFormatException extends ExcelMapperException {
 
     private final CellReference cellReference;
 

@@ -9,10 +9,10 @@ import java.io.InputStream;
 
 public interface WorkbookFactory {
 
-    Workbook build(InputStream inputStream) throws IOException;
-
     Workbook build(String path) throws IOException, InvalidFormatException;
 
     Workbook build(File file) throws IOException, InvalidFormatException;
+
+    Workbook build(InputStream inputStream) throws IOException;
 
 }

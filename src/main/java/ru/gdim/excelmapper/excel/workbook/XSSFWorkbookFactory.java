@@ -12,15 +12,6 @@ import java.io.InputStream;
 public final class XSSFWorkbookFactory implements WorkbookFactory {
 
     @Override
-    public Workbook build(InputStream inputStream) throws IOException {
-
-        try (Workbook workBook = new XSSFWorkbook(inputStream)) {
-
-            return workBook;
-        }
-    }
-
-    @Override
     public Workbook build(String path) throws IOException, InvalidFormatException {
 
         try (OPCPackage opcPackage = OPCPackage.open(path)) {
@@ -35,6 +26,15 @@ public final class XSSFWorkbookFactory implements WorkbookFactory {
         try (OPCPackage opcPackage = OPCPackage.open(file)) {
 
             return new XSSFWorkbook(opcPackage);
+        }
+    }
+
+    @Override
+    public Workbook build(InputStream inputStream) throws IOException {
+
+        try (Workbook workBook = new XSSFWorkbook(inputStream)) {
+
+            return workBook;
         }
     }
 
