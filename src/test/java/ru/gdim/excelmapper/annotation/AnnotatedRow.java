@@ -1,7 +1,7 @@
 package ru.gdim.excelmapper.annotation;
 
 import lombok.Data;
-import ru.gdim.excelmapper.mapper.driver.annotation.Annotation;
+import ru.gdim.excelmapper.mapper.driver.annotation.ExcelValue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Data
 public final class AnnotatedRow {
 
-    @Annotation(columnName = "Название колонки 1")
+    @ExcelValue(columnName = "Колонка long")
     private Long longValue;
 
-    @Annotation(columnName = "Название колонки 2", isRequired = true)
+    @ExcelValue(columnName = "Колонка big decimal", isRequired = false)
     private BigDecimal bigDecimal;
 
-    @Annotation(columnName = "Название колонки 3", isRequired = false)
+    @ExcelValue(columnName = "Колонка после пропуска с датой", isRequired = false)
     private LocalDate localDate;
 
 }

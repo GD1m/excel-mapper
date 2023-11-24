@@ -6,9 +6,9 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({TYPE, ANNOTATION_TYPE, FIELD})
+@Target({FIELD})
 @Retention(RUNTIME)
-public @interface Annotation {
+public @interface ExcelValue {
 
     String columnName();
 

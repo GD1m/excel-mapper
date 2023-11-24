@@ -28,7 +28,9 @@ class AnnotationBasedExcelMappingTest {
 
     private final WorkbookFactory workbookFactory = new XSSFWorkbookFactory();
     private final ColumnHeaderProvider columnHeaderProvider = new FirstRowColumnHeaderProvider();
-    private final ExcelMappingDriver<AnnotatedRow> excelMappingDriver = new AnnotationBasedExcelMappingDriver<>();
+    private final ExcelMappingDriver<AnnotatedRow> excelMappingDriver = new AnnotationBasedExcelMappingDriver<>(
+            AnnotatedRow.class
+    );
 
     private File file;
     private ExcelMapper<AnnotatedRow> excelMapper;
