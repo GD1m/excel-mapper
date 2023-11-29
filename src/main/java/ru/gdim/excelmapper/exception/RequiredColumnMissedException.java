@@ -17,7 +17,7 @@ public final class RequiredColumnMissedException extends ExcelMapperException {
 
     public RequiredColumnMissedException(Row row, ExcelColumn column, Throwable cause) {
 
-        super("Не найдена обязательная колонка '" + column.getTitle() + "' в строке c индексом: " + row.getRowNum(), cause);
+        super("Не найдена обязательная колонка '" + column.getHeaderTitle() + "' в строке c индексом: " + row.getRowNum(), cause);
     }
 
 }

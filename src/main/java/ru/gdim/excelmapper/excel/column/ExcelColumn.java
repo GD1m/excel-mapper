@@ -8,7 +8,7 @@ public interface ExcelColumn {
     /**
      * @return заголовок колонки
      */
-    String getTitle();
+    String getHeaderTitle();
 
     /**
      * @return является ли колонка обязательной

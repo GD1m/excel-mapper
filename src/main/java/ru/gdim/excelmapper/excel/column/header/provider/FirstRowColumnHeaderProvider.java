@@ -10,7 +10,7 @@ import org.apache.poi.ss.util.CellAddress;
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
 import ru.gdim.excelmapper.exception.InvalidCellFormatException;
-import ru.gdim.excelmapper.mapper.format.FormatUtils;
+import ru.gdim.excelmapper.mapper.format.StringFormatter;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -118,7 +118,7 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
         try {
 
             return StringUtils.trim(
-                    FormatUtils.stringValue(cell)
+                    new StringFormatter().format(cell)
             );
         } catch (InvalidCellFormatException e) {
 
@@ -143,7 +143,7 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
 
         return columns
                 .stream()
-                .filter(column -> Objects.equals(column.getTitle(), cellValue))
+                .filter(column -> Objects.equals(column.getHeaderTitle(), cellValue))
                 .findFirst()
                 .orElse(null);
     }

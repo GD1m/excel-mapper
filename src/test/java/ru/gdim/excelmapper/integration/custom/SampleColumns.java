@@ -1,4 +1,4 @@
-package ru.gdim.excelmapper.custom;
+package ru.gdim.excelmapper.integration.custom;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ public enum SampleColumns implements ExcelColumn {
     BIG_DECIMAL("Колонка big decimal", false),
     DATE_AFTER_BLANK("Колонка после пропуска с датой", false);
 
-    private final String title;
+    private final String headerTitle;
     private final boolean required;
 
 }

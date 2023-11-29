@@ -1,4 +1,4 @@
-package ru.gdim.excelmapper.custom;
+package ru.gdim.excelmapper.integration.custom;
 
 import lombok.Data;
 

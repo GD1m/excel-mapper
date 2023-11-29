@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import ru.gdim.excelmapper.exception.InvalidCellFormatException;
+import ru.gdim.excelmapper.exception.ValueFormatterNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,11 +16,19 @@ import java.util.Date;
 /**
  * Утилита для парсинга разных типов данных из excel ячейки
  */
-public final class FormatUtils {
+public final class FormatUtils { // TODO refactor/cleanup
 
     public static boolean isBlank(Cell cell) throws InvalidCellFormatException {
 
         return cell == null || StringUtils.isBlank(stringValue(cell));
+    }
+
+    public static <T> T format(Cell cell, Class<T> valueType, ValueFormatterProvider valueFormatterProvider)
+            throws ValueFormatterNotFoundException, InvalidCellFormatException {
+
+        ValueFormatter<T> valueFormatter = valueFormatterProvider.getFormatterForType(valueType);
+
+        return valueFormatter.format(cell);
     }
 
     public static String stringValue(Cell cell) throws InvalidCellFormatException {
@@ -82,7 +91,12 @@ public final class FormatUtils {
 
         Date value = dateValue(cell);
 
-        return (value != null) ? LocalDate.ofInstant(value.toInstant(), ZoneId.systemDefault()) : null;
+        return (value != null)
+                ? value
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                : null;
     }
 
     public static LocalDateTime localDateTimeValue(Cell cell) throws InvalidCellFormatException {
