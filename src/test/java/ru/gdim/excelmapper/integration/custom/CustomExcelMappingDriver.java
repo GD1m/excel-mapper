@@ -1,6 +1,5 @@
 package ru.gdim.excelmapper.integration.custom;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import ru.gdim.excelmapper.excel.column.ColumnHeaderBag;
@@ -21,7 +20,6 @@ import java.util.stream.Stream;
 /**
  * Драйвер импорта тестовых данных из excel
  */
-@RequiredArgsConstructor
 public final class CustomExcelMappingDriver implements ExcelMappingDriver<SampleParsedRow> {
 
     /**

@@ -1,10 +1,11 @@
 package ru.gdim.excelmapper;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.gdim.excelmapper.excel.column.ColumnHeaderBag;
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
@@ -34,8 +35,9 @@ import java.util.Objects;
  *
  * @param <T> тип объекта с импортированными данными
  */
-@Slf4j
 public final class ExcelMapper<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(ExcelMapper.class);
 
     private final ExcelMappingDriver<T> excelMappingDriver;
     private final WorkbookFactory workbookFactory;

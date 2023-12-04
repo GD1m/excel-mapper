@@ -1,6 +1,5 @@
 package ru.gdim.excelmapper.mapper.driver.annotation;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import ru.gdim.excelmapper.excel.column.ColumnHeaderBag;
@@ -22,7 +21,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Slf4j
 public final class AnnotationBasedExcelMappingDriver<T> implements ExcelMappingDriver<T> { // TODO separate lib?
 
     private final Class<T> resultType;

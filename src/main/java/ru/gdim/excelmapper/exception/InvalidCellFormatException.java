@@ -1,13 +1,11 @@
 package ru.gdim.excelmapper.exception;
 
-import lombok.Getter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellReference;
 
 /**
  * Некорректный формат excel ячейки
  */
-@Getter
 public final class InvalidCellFormatException extends ExcelMapperException { // TODO rename or create separate CellProcessingException ?
 
     private final CellReference cellReference;
@@ -20,6 +18,11 @@ public final class InvalidCellFormatException extends ExcelMapperException { // 
         );
 
         cellReference = new CellReference(cell.getRowIndex(), cell.getColumnIndex());
+    }
+
+    public CellReference getCellReference() {
+
+        return cellReference;
     }
 
 }

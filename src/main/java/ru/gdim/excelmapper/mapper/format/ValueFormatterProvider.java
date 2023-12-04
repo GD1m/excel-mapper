@@ -1,24 +1,33 @@
 package ru.gdim.excelmapper.mapper.format;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import ru.gdim.excelmapper.exception.ValueFormatterNotFoundException;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-@AllArgsConstructor
 public final class ValueFormatterProvider {
 
-    @Getter
-    @Setter
     private Collection<ValueFormatter<?>> valueFormatters;
 
     public ValueFormatterProvider() {
 
         useDefaultFormatters();
+    }
+
+    public ValueFormatterProvider(Collection<ValueFormatter<?>> valueFormatters) {
+
+        this.valueFormatters = valueFormatters;
+    }
+
+    public Collection<ValueFormatter<?>> getValueFormatters() {
+
+        return valueFormatters;
+    }
+
+    public void setValueFormatters(Collection<ValueFormatter<?>> valueFormatters) {
+
+        this.valueFormatters = valueFormatters;
     }
 
     public void registerValueFormatter(ValueFormatter<?> valueFormatter) {

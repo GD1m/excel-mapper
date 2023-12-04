@@ -1,11 +1,11 @@
 package ru.gdim.excelmapper.excel.column.header.provider;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
 import ru.gdim.excelmapper.exception.InvalidCellFormatException;
@@ -19,9 +19,9 @@ import java.util.Set;
 /**
  * Ищет заголовки в первой непустой строке
  */
-@RequiredArgsConstructor
-@Slf4j
 public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(FirstRowColumnHeaderProvider.class);
 
     /**
      * Получить заголовки колонок листа таблицы excel
