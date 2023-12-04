@@ -4,7 +4,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import ru.gdim.excelmapper.ExcelMapper;
 import ru.gdim.excelmapper.excel.column.header.provider.FirstRowColumnHeaderProvider;
 import ru.gdim.excelmapper.excel.row.RowResult;
@@ -27,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ExcelMappingDriverTest {
 
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ExcelMappingDriverTest.class);
     private static final String SAMPLE_EXCEL_FILE_PATH = "./sample/sample.xlsx";
 
     private File file;

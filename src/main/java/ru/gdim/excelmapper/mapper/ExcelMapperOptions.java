@@ -3,6 +3,7 @@ package ru.gdim.excelmapper.mapper;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+@SuppressWarnings("unused")
 public final class ExcelMapperOptions {
 
     private boolean failOnError = false;

@@ -32,6 +32,7 @@ public final class ColumnHeaderReference {
         return column;
     }
 
+    @SuppressWarnings("unused")
     public Cell getCell() {
 
         return cell;

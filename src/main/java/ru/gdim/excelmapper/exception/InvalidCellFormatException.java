@@ -20,6 +20,7 @@ public final class InvalidCellFormatException extends ExcelMapperException { // 
         cellReference = new CellReference(cell.getRowIndex(), cell.getColumnIndex());
     }
 
+    @SuppressWarnings("unused")
     public CellReference getCellReference() {
 
         return cellReference;

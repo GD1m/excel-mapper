@@ -8,6 +8,7 @@ import java.util.StringJoiner;
  *
  * @param <T> тип объекта с импортированными данными
  */
+@SuppressWarnings("unused")
 public final class RowResult<T> {
 
     /**

@@ -34,17 +34,13 @@ public final class MappedResult<T> {
         return statistic;
     }
 
+    @SuppressWarnings("unused")
     public Collection<RowResult<T>> getSuccessRows() {
 
         return rows
                 .stream()
                 .filter(row -> row.getStatus() == RowResultStatus.SUCCESS)
                 .collect(Collectors.toList());
-    }
-
-    public String prettyPrint() {
-
-        return null; // TODO implement
     }
 
     @Override

@@ -35,6 +35,7 @@ import java.util.Objects;
  *
  * @param <T> тип объекта с импортированными данными
  */
+@SuppressWarnings("unused")
 public final class ExcelMapper<T> {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelMapper.class);
