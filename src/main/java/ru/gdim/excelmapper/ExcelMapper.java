@@ -1,7 +1,6 @@
 package ru.gdim.excelmapper;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -220,12 +219,13 @@ public final class ExcelMapper<T> {
     private MappedResult<T> processSheet(Sheet sheet) throws ExcelMapperException {
 
         log.debug("Маппинг листа excel '{}' начат...", sheet.getSheetName());
+        log.debug("Options: {}", options);
 
         Collection<ExcelColumn> columns = excelMappingDriver.getColumns();
 
         log.debug("Specified columns: {}", columns);
 
-        if (CollectionUtils.isEmpty(columns)) {
+        if (columns == null || columns.isEmpty()) {
 
             throw new ExcelColumnsNotSpecifiedException();
         }
@@ -234,7 +234,7 @@ public final class ExcelMapper<T> {
 
         log.debug("Found column headers by specified columns: {}", foundColumnHeaders);
 
-        if (CollectionUtils.isEmpty(foundColumnHeaders)) {
+        if (foundColumnHeaders == null || foundColumnHeaders.isEmpty()) {
 
             throw new ColumnHeadersNotFoundException();
         }
@@ -260,10 +260,7 @@ public final class ExcelMapper<T> {
                     new ColumnHeaderBag(foundColumnHeaders)
             );
 
-            rowResults.add(rowResult);
-
             RowResultStatus rowResultStatus = rowResult.getStatus();
-            updateStatistic(statistic, rowResultStatus); // TODO do not count skipped rows
 
             if (
                     options.isHaltOnBlankRow() && (
@@ -276,6 +273,9 @@ public final class ExcelMapper<T> {
 
                 break;
             }
+
+            rowResults.add(rowResult);
+            updateStatistic(statistic, rowResultStatus); // TODO do not count skipped rows
         }
 
         return new MappedResult<>(rowResults, statistic);
@@ -297,7 +297,7 @@ public final class ExcelMapper<T> {
      *
      * @param sheet           лист excel
      * @param rowIndex        индекс строки excel
-     * @param columnHeaderBag контейнер найденных колонок по заголовку
+     * @param columnHeaderBag контейнер найденных колонок по заголовкам
      * @return результат импорта excel строки
      */
     private RowResult<T> processRow(Sheet sheet, int rowIndex, ColumnHeaderBag columnHeaderBag)
@@ -353,7 +353,7 @@ public final class ExcelMapper<T> {
     private RowResult<T> handleRequiredColumnMissedRow(int rowIndex, RequiredColumnMissedException e)
             throws RequiredColumnMissedException {
 
-        log.warn("Не найдена обязательная колонка ({}): ", rowIndex);
+        log.warn("Не найдена обязательная колонка ({}): {}", rowIndex, e.getMessage());
 
         if (options.isFailOnRequiredColumnMissed()) {
 

@@ -76,7 +76,7 @@ public final class AnnotationBasedExcelMappingDriver<T> implements ExcelMappingD
      * Импорт строки excel
      *
      * @param row                    строка excel
-     * @param columnBag              контейнер найденных колонок по заголовку
+     * @param columnBag              контейнер найденных колонок по заголовкам
      * @param valueFormatterProvider
      * @return DTO с импортированными данными
      * @throws InvalidCellFormatException    если в ячейке excel некорректное значение

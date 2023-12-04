@@ -27,7 +27,7 @@ public interface ExcelMappingDriver<T> {
      * Импорт строки excel (Логика мапинга строки excel в заданный тип <T>)
      *
      * @param row                    строка excel
-     * @param columnBag              контейнер найденных колонок по заголовку
+     * @param columnBag              контейнер найденных колонок по заголовкам
      * @param valueFormatterProvider // TODO
      * @return DTO с импортированными данными
      * @throws InvalidCellFormatException    если в ячейке excel некорректное значение

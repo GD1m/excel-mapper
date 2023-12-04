@@ -41,7 +41,7 @@ public final class CustomExcelMappingDriver implements ExcelMappingDriver<Sample
      * Импорт строки excel
      *
      * @param row                    строка excel
-     * @param columnBag              контейнер найденных колонок по заголовку
+     * @param columnBag              контейнер найденных колонок по заголовкам
      * @param valueFormatterProvider
      * @return DTO с импортированными данными
      * @throws InvalidCellFormatException    если в ячейке excel некорректное значение
@@ -52,7 +52,7 @@ public final class CustomExcelMappingDriver implements ExcelMappingDriver<Sample
     public SampleParsedRow readData(Row row, ColumnHeaderBag columnBag, ValueFormatterProvider valueFormatterProvider)
             throws InvalidCellFormatException, RequiredColumnMissedException {
 
-        boolean isRowNotBlank = false;
+        boolean isRowBlank = true;
 
         SampleParsedRow dto = new SampleParsedRow();
 
@@ -60,14 +60,14 @@ public final class CustomExcelMappingDriver implements ExcelMappingDriver<Sample
         if (longValue != null) {
 
             dto.setLongValue(new LongFormatter().format(longValue));
-            isRowNotBlank = true;
+            isRowBlank = false;
         }
 
         Cell bigDecimal = columnBag.getCellFromRow(row, SampleColumns.BIG_DECIMAL);
         if (bigDecimal != null) {
 
             dto.setBigDecimal(new BigDecimalFormatter().format(bigDecimal));
-            isRowNotBlank = true;
+            isRowBlank = false;
         }
 
         Cell date = columnBag.getCellFromRow(row, SampleColumns.DATE_AFTER_BLANK);
@@ -76,12 +76,12 @@ public final class CustomExcelMappingDriver implements ExcelMappingDriver<Sample
             LocalDate localDate = new LocalDateFormatter().format(date);
             dto.setLocalDate(localDate); // TODO refactor
             if (localDate != null) {
-                isRowNotBlank = true;
+                isRowBlank = false;
 
             }
         }
 
-        return (isRowNotBlank) ? dto : null;
+        return (isRowBlank) ? null : dto;
     }
 
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 public final class AnnotatedRow {
 
-    @ExcelValue(columnHeaderTitle = "Колонка long", isRequired = false, valueFormatter = {})
+    @ExcelValue(columnHeaderTitle = "Колонка long", isRequired = true, valueFormatter = {})
     private Long longValue;
 
     @ExcelValue(columnHeaderTitle = "Колонка big decimal", isRequired = false, valueFormatter = {})

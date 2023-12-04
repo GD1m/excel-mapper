@@ -107,8 +107,6 @@ class ExcelMappingDriverTest {
 //            assertSame(row.getStatus(), RowResultStatus.SUCCESS);
 //            assertNotNull(row.getData());
         });
-
-        log.debug("{}", result);
     }
 
 }
