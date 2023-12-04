@@ -1,28 +1,21 @@
 package ru.gdim.excelmapper.mapper.format;
 
 import org.apache.poi.ss.usermodel.Cell;
-import ru.gdim.excelmapper.exception.InvalidCellFormatException;
 
 import java.util.Date;
 
 public class DateFormatter implements ValueFormatter<Date> {
 
     @Override
-    public Class<Date> type() {
+    public Class<Date> valueType() {
 
         return Date.class;
     }
 
     @Override
-    public Date format(Cell cell) throws InvalidCellFormatException {
+    public Date format(Cell cell) {
 
-        try {
-
-            return (cell != null) ? cell.getDateCellValue() : null;
-        } catch (Exception e) {
-
-            throw new InvalidCellFormatException(cell, e);
-        }
+        return (cell != null) ? cell.getDateCellValue() : null;
     }
 
 }

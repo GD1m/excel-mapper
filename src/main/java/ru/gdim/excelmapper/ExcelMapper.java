@@ -20,30 +20,25 @@ import ru.gdim.excelmapper.mapper.ExcelMapperOptions;
 import ru.gdim.excelmapper.mapper.MappedResult;
 import ru.gdim.excelmapper.mapper.MappedStatistic;
 import ru.gdim.excelmapper.mapper.driver.ExcelMappingDriver;
-import ru.gdim.excelmapper.mapper.format.ValueFormatterProvider;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Мапинг данных из excel
  *
  * @param <T> тип объекта с импортированными данными
  */
-@SuppressWarnings("unused")
-public final class ExcelMapper<T> {
+public class ExcelMapper<T> {
 
     private static final Logger log = LoggerFactory.getLogger(ExcelMapper.class);
 
     private final ExcelMappingDriver<T> excelMappingDriver;
     private final WorkbookFactory workbookFactory;
     private final ColumnHeaderProvider columnHeaderProvider;
-    private final ValueFormatterProvider valueFormatterProvider;
     private final ExcelMapperOptions options;
 
     /**
@@ -57,7 +52,6 @@ public final class ExcelMapper<T> {
                 excelMappingDriver,
                 new XSSFWorkbookFactory(),
                 new FirstRowColumnHeaderProvider(),
-                new ValueFormatterProvider(),
                 new ExcelMapperOptions()
         );
     }
@@ -66,14 +60,12 @@ public final class ExcelMapper<T> {
             ExcelMappingDriver<T> excelMappingDriver,
             WorkbookFactory workbookFactory,
             ColumnHeaderProvider columnHeaderProvider,
-            ValueFormatterProvider valueFormatterProvider,
             ExcelMapperOptions options
     ) {
 
         this.excelMappingDriver = Objects.requireNonNull(excelMappingDriver);
         this.workbookFactory = Objects.requireNonNull(workbookFactory);
         this.columnHeaderProvider = Objects.requireNonNull(columnHeaderProvider);
-        this.valueFormatterProvider = Objects.requireNonNull(valueFormatterProvider);
         this.options = Objects.requireNonNull(options);
     }
 
@@ -146,12 +138,12 @@ public final class ExcelMapper<T> {
      * @param inputStream InputStream excel файла
      * @return результат мапинга
      */
-    public MappedResult<T> read(InputStream inputStream) throws IOException, ExcelMapperException {
+    public MappedResult<T> read(InputStream inputStream) throws ExcelMapperException, IOException {
 
         return read(inputStream, 0);
     }
 
-    public MappedResult<T> read(InputStream inputStream, int sheetIndex) throws IOException, ExcelMapperException {
+    public MappedResult<T> read(InputStream inputStream, int sheetIndex) throws ExcelMapperException, IOException {
 
         return processWorkBook(
                 createWorkBook(inputStream),
@@ -188,7 +180,14 @@ public final class ExcelMapper<T> {
      * @param workBook представление импортируемого файла
      * @return результат мапинга
      */
-    private MappedResult<T> processWorkBook(Workbook workBook, int sheetIndex) throws ExcelMapperException {
+    private MappedResult<T> processWorkBook(Workbook workBook, int sheetIndex)
+            throws SheetNotFoundException,
+            ExcelColumnsNotSpecifiedException,
+            ColumnHeadersNotFoundException,
+            RequiredColumnMissedException,
+            RowProcessingException,
+            DuplicateSpecifiedColumnsException,
+            DuplicateColumnHeadersException {
 
         Sheet sheet = workBook.getSheetAt(sheetIndex);
 
@@ -200,7 +199,14 @@ public final class ExcelMapper<T> {
         return processSheet(sheet);
     }
 
-    private MappedResult<T> processWorkBook(Workbook workBook, String sheetName) throws ExcelMapperException {
+    private MappedResult<T> processWorkBook(Workbook workBook, String sheetName)
+            throws SheetNotFoundException,
+            ExcelColumnsNotSpecifiedException,
+            ColumnHeadersNotFoundException,
+            RowProcessingException,
+            RequiredColumnMissedException,
+            DuplicateSpecifiedColumnsException,
+            DuplicateColumnHeadersException {
 
         Sheet sheet = workBook.getSheet(sheetName);
 
@@ -219,12 +225,18 @@ public final class ExcelMapper<T> {
      * @return результат мапинга
      * @throws ColumnHeadersNotFoundException если не были найдены заголовки колонок в таблице excel
      */
-    private MappedResult<T> processSheet(Sheet sheet) throws ExcelMapperException {
+    private MappedResult<T> processSheet(Sheet sheet)
+            throws ExcelColumnsNotSpecifiedException,
+            ColumnHeadersNotFoundException,
+            RequiredColumnMissedException,
+            RowProcessingException,
+            DuplicateSpecifiedColumnsException,
+            DuplicateColumnHeadersException {
 
         log.debug("Маппинг листа excel '{}' начат...", sheet.getSheetName());
         log.debug("Options: {}", options);
 
-        Collection<ExcelColumn> columns = excelMappingDriver.getColumns();
+        Collection<ExcelColumn> columns = excelMappingDriver.getExpectedColumns();
 
         log.debug("Specified columns: {}", columns);
 
@@ -232,6 +244,8 @@ public final class ExcelMapper<T> {
 
             throw new ExcelColumnsNotSpecifiedException();
         }
+
+        checkSpecifiedColumnsForDuplicates(columns);
 
         Collection<ColumnHeaderReference> foundColumnHeaders = columnHeaderProvider.getColumnHeaders(sheet, columns);
 
@@ -242,6 +256,8 @@ public final class ExcelMapper<T> {
             throw new ColumnHeadersNotFoundException();
         }
 
+        checkColumnHeadersForDuplicates(foundColumnHeaders);
+
         MappedResult<T> result = processRows(sheet, foundColumnHeaders);
 
         log.debug("Маппинг листа excel завершен: {}", result.getStatistic());
@@ -249,8 +265,42 @@ public final class ExcelMapper<T> {
         return result;
     }
 
+    private void checkSpecifiedColumnsForDuplicates(Collection<ExcelColumn> columns) throws DuplicateSpecifiedColumnsException {
+
+        Set<String> headerTitles = new HashSet<>();
+
+        List<String> duplicates = columns
+                .stream()
+                .map(ExcelColumn::getHeaderTitle)
+                .filter(title -> !headerTitles.add(title))
+                .collect(Collectors.toList());
+
+        if (!duplicates.isEmpty()) {
+
+            throw new DuplicateSpecifiedColumnsException(duplicates);
+        }
+    }
+
+    private void checkColumnHeadersForDuplicates(Collection<ColumnHeaderReference> foundColumnHeaders)
+            throws DuplicateColumnHeadersException {
+
+        Set<ExcelColumn> columns = new HashSet<>();
+
+        List<String> duplicates = foundColumnHeaders
+                .stream()
+                .map(ColumnHeaderReference::getColumn)
+                .filter(columnHeader -> !columns.add(columnHeader))
+                .map(ExcelColumn::getHeaderTitle)
+                .collect(Collectors.toList());
+
+        if (!duplicates.isEmpty()) {
+
+            throw new DuplicateColumnHeadersException(duplicates);
+        }
+    }
+
     private MappedResult<T> processRows(Sheet sheet, Collection<ColumnHeaderReference> foundColumnHeaders)
-            throws ExcelMapperException {  // TODO detail throws
+            throws RequiredColumnMissedException, RowProcessingException {
 
         List<RowResult<T>> rowResults = new ArrayList<>();
         MappedStatistic statistic = new MappedStatistic();
@@ -278,7 +328,7 @@ public final class ExcelMapper<T> {
             }
 
             rowResults.add(rowResult);
-            updateStatistic(statistic, rowResultStatus); // TODO do not count skipped rows
+            updateStatistic(statistic, rowResultStatus); // TODO do not count skipped rows ?
         }
 
         return new MappedResult<>(rowResults, statistic);
@@ -304,7 +354,7 @@ public final class ExcelMapper<T> {
      * @return результат импорта excel строки
      */
     private RowResult<T> processRow(Sheet sheet, int rowIndex, ColumnHeaderBag columnHeaderBag)
-            throws InvalidCellFormatException, RequiredColumnMissedException {
+            throws RequiredColumnMissedException, RowProcessingException {
 
         Row row = sheet.getRow(rowIndex);
 
@@ -315,7 +365,15 @@ public final class ExcelMapper<T> {
 
         try {
 
-            T data = readRowData(row, columnHeaderBag);
+            T data;
+
+            try {
+
+                data = readRowData(row, columnHeaderBag);
+            } catch (RuntimeException e) {
+
+                throw new RowProcessingException(row, e);
+            }
 
             if (data == null) {
 
@@ -326,7 +384,7 @@ public final class ExcelMapper<T> {
         } catch (RequiredColumnMissedException e) {
 
             return handleRequiredColumnMissedRow(rowIndex, e);
-        } catch (RuntimeException e) {
+        } catch (RowProcessingException e) {
 
             return handleFailedRow(rowIndex, e);
         }
@@ -334,9 +392,9 @@ public final class ExcelMapper<T> {
     }
 
     private T readRowData(Row row, ColumnHeaderBag columnHeaderBag)
-            throws InvalidCellFormatException, RequiredColumnMissedException {
+            throws RowProcessingException, RequiredColumnMissedException {
 
-        return excelMappingDriver.readData(row, columnHeaderBag, valueFormatterProvider);
+        return excelMappingDriver.readData(row, columnHeaderBag);
     }
 
     private RowResult<T> handleBlankRow(int rowIndex) {
@@ -366,7 +424,7 @@ public final class ExcelMapper<T> {
         return new RowResult<>(rowIndex, RowResultStatus.REQUIRED_COLUMN_MISSED, null, e);
     }
 
-    private RowResult<T> handleFailedRow(int rowIndex, RuntimeException e) {
+    private RowResult<T> handleFailedRow(int rowIndex, RowProcessingException e) throws RowProcessingException {
 
         log.error("Ошибка при импорте строки ({}): ", rowIndex, e);
 

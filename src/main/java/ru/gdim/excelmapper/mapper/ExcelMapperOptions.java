@@ -1,15 +1,18 @@
 package ru.gdim.excelmapper.mapper;
 
+import org.apache.poi.ss.usermodel.Row;
+
 import java.util.Objects;
 import java.util.StringJoiner;
 
-@SuppressWarnings("unused")
-public final class ExcelMapperOptions {
+public class ExcelMapperOptions {
 
     private boolean failOnError = false;
     private boolean failOnRequiredColumnMissed = false;
-    private boolean haltOnBlankRow = true;
-    private int maxBlankRowsAtARow; // TODO name, implement
+    private boolean haltOnBlankRow = true; // TODO remove?
+    private int maxBlankRowsAtARow; // TODO name, implement ?
+
+    private Row.MissingCellPolicy missingCellPolicy; // TODO implement ?
 
     public ExcelMapperOptions() {
     }

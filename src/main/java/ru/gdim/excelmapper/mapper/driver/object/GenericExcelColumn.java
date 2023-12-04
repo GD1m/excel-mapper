@@ -1,4 +1,4 @@
-package ru.gdim.excelmapper.mapper.driver.annotation;
+package ru.gdim.excelmapper.mapper.driver.object;
 
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
 import ru.gdim.excelmapper.mapper.format.ValueFormatter;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public final class GenericExcelColumn implements ExcelColumn {
+public class GenericExcelColumn implements ExcelColumn {
 
     private final String headerTitle;
     private final boolean required;
@@ -24,23 +24,24 @@ public final class GenericExcelColumn implements ExcelColumn {
             Class<? extends ValueFormatter<?>> valueFormatterType
     ) {
 
-        this.headerTitle = headerTitle;
+        this.headerTitle = Objects.requireNonNull(headerTitle);
         this.required = required;
-        this.fieldName = fieldName;
-        this.valueType = valueType;
+        this.fieldName = Objects.requireNonNull(fieldName);
+        this.valueType = Objects.requireNonNull(valueType);
         this.valueFormatterType = valueFormatterType;
     }
 
     public GenericExcelColumn(ExcelValue annotation, Field field) {
 
+        Objects.requireNonNull(annotation);
+        Objects.requireNonNull(field);
+
         headerTitle = annotation.columnHeaderTitle();
         required = annotation.isRequired();
         fieldName = field.getName();
         valueType = field.getType();
-
-        Class<? extends ValueFormatter<?>>[] valueFormatters = annotation.valueFormatter();
         valueFormatterType = Arrays
-                .stream(valueFormatters)
+                .stream(annotation.valueFormatter())
                 .findFirst()
                 .orElse(null);
     }

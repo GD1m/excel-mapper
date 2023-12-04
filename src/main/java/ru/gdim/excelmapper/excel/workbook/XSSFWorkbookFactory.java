@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public final class XSSFWorkbookFactory implements WorkbookFactory {
+public class XSSFWorkbookFactory implements WorkbookFactory {
 
     @Override
     public Workbook build(String path) throws IOException, InvalidFormatException {

@@ -8,8 +8,7 @@ import java.util.StringJoiner;
  *
  * @param <T> тип объекта с импортированными данными
  */
-@SuppressWarnings("unused")
-public final class RowResult<T> {
+public class RowResult<T> {
 
     /**
      * Индекс excel строки (начиная с 0, пустые строки пропускаются)

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> тип объекта с импортированными данными
  */
-public final class MappedResult<T> {
+public class MappedResult<T> {
 
     private final Collection<RowResult<T>> rows;
     private final MappedStatistic statistic;
@@ -34,7 +34,6 @@ public final class MappedResult<T> {
         return statistic;
     }
 
-    @SuppressWarnings("unused")
     public Collection<RowResult<T>> getSuccessRows() {
 
         return rows

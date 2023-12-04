@@ -1,35 +1,41 @@
 package ru.gdim.excelmapper.integration.annotation;
 
-import ru.gdim.excelmapper.mapper.driver.annotation.ExcelValue;
-import ru.gdim.excelmapper.mapper.format.LocalDateFormatter;
-import ru.gdim.excelmapper.mapper.format.StringFormatter;
+import ru.gdim.excelmapper.mapper.driver.object.ExcelValue;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public final class AnnotatedRow {
+public class AnnotatedRow {
 
-    @ExcelValue(columnHeaderTitle = "Колонка long", isRequired = true, valueFormatter = {})
+    @ExcelValue(columnHeaderTitle = "Int column", isRequired = false, valueFormatter = {})
     private Long longValue;
 
-    @ExcelValue(columnHeaderTitle = "Колонка big decimal", isRequired = false, valueFormatter = {})
+    @ExcelValue(columnHeaderTitle = "Float column", isRequired = false, valueFormatter = {})
+    private Float floatValue;
+
+    @ExcelValue(columnHeaderTitle = "Big Decimal column", isRequired = false, valueFormatter = {})
     private BigDecimal bigDecimal;
 
     @ExcelValue(
-            columnHeaderTitle = "Колонка после пропуска с датой",
-            isRequired = false,
-            valueFormatter = LocalDateFormatter.class
+            columnHeaderTitle = "Datetime column",
+            isRequired = false
+    )
+    private LocalDateTime localDateTime;
+
+    @ExcelValue(
+            columnHeaderTitle = "Date column",
+            isRequired = false
     )
     private LocalDate localDate;
 
-    @ExcelValue(
-            columnHeaderTitle = "10.10.2023 0:00:00",
-            isRequired = false,
-            valueFormatter = StringFormatter.class
-    )
-    private String string;
+    @ExcelValue(columnHeaderTitle = "Boolean column")
+    private Boolean booleanValue;
+
+    @ExcelValue(columnHeaderTitle = "Колонка UTF-8 column")
+    private String stringValue;
 
     public Long getLongValue() {
 
@@ -39,6 +45,16 @@ public final class AnnotatedRow {
     public void setLongValue(Long longValue) {
 
         this.longValue = longValue;
+    }
+
+    public Float getFloatValue() {
+
+        return floatValue;
+    }
+
+    public void setFloatValue(Float floatValue) {
+
+        this.floatValue = floatValue;
     }
 
     public BigDecimal getBigDecimal() {
@@ -51,6 +67,16 @@ public final class AnnotatedRow {
         this.bigDecimal = bigDecimal;
     }
 
+    public LocalDateTime getLocalDateTime() {
+
+        return localDateTime;
+    }
+
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+
+        this.localDateTime = localDateTime;
+    }
+
     public LocalDate getLocalDate() {
 
         return localDate;
@@ -61,14 +87,24 @@ public final class AnnotatedRow {
         this.localDate = localDate;
     }
 
-    public String getString() {
+    public Boolean getBooleanValue() {
 
-        return string;
+        return booleanValue;
     }
 
-    public void setString(String string) {
+    public void setBooleanValue(Boolean booleanValue) {
 
-        this.string = string;
+        this.booleanValue = booleanValue;
+    }
+
+    public String getStringValue() {
+
+        return stringValue;
+    }
+
+    public void setStringValue(String stringValue) {
+
+        this.stringValue = stringValue;
     }
 
     @Override
@@ -81,15 +117,18 @@ public final class AnnotatedRow {
         AnnotatedRow that = (AnnotatedRow) o;
 
         return Objects.equals(longValue, that.longValue)
+                && Objects.equals(floatValue, that.floatValue)
                 && Objects.equals(bigDecimal, that.bigDecimal)
+                && Objects.equals(localDateTime, that.localDateTime)
                 && Objects.equals(localDate, that.localDate)
-                && Objects.equals(string, that.string);
+                && Objects.equals(booleanValue, that.booleanValue)
+                && Objects.equals(stringValue, that.stringValue);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(longValue, bigDecimal, localDate, string);
+        return Objects.hash(longValue, floatValue, bigDecimal, localDateTime, localDate, booleanValue, stringValue);
     }
 
     @Override
@@ -97,9 +136,12 @@ public final class AnnotatedRow {
 
         return new StringJoiner(", ", AnnotatedRow.class.getSimpleName() + "[", "]")
                 .add("longValue=" + longValue)
+                .add("floatValue=" + floatValue)
                 .add("bigDecimal=" + bigDecimal)
+                .add("localDateTime=" + localDateTime)
                 .add("localDate=" + localDate)
-                .add("string='" + string + "'")
+                .add("booleanValue=" + booleanValue)
+                .add("stringValue='" + stringValue + "'")
                 .toString();
     }
 

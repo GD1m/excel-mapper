@@ -5,28 +5,26 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.gdim.excelmapper.ExcelMapper;
-import ru.gdim.excelmapper.excel.column.header.provider.FirstRowColumnHeaderProvider;
 import ru.gdim.excelmapper.excel.row.RowResult;
-import ru.gdim.excelmapper.excel.workbook.XSSFWorkbookFactory;
+import ru.gdim.excelmapper.excel.row.RowResultStatus;
 import ru.gdim.excelmapper.exception.ExcelMapperException;
 import ru.gdim.excelmapper.integration.annotation.AnnotatedRow;
 import ru.gdim.excelmapper.integration.custom.CustomExcelMappingDriver;
 import ru.gdim.excelmapper.integration.custom.SampleParsedRow;
-import ru.gdim.excelmapper.mapper.ExcelMapperOptions;
 import ru.gdim.excelmapper.mapper.MappedResult;
 import ru.gdim.excelmapper.mapper.MappedStatistic;
-import ru.gdim.excelmapper.mapper.driver.annotation.AnnotationBasedExcelMappingDriver;
-import ru.gdim.excelmapper.mapper.format.ValueFormatterProvider;
+import ru.gdim.excelmapper.mapper.driver.object.ObjectMappingDriver;
+import ru.gdim.excelmapper.mapper.driver.object.ValueFormatterProvider;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ExcelMappingDriverTest {
 
-    private static final String SAMPLE_EXCEL_FILE_PATH = "./sample/sample.xlsx";
+    private static final String SAMPLE_EXCEL_FILE_PATH = "src/test/resources/sample/sample.xlsx";
 
     private File file;
 
@@ -41,52 +39,28 @@ class ExcelMappingDriverTest {
     }
 
     @Test
-    void annotationBasedExcelMappingDriver() throws ExcelMapperException, IOException, InvalidFormatException {
+    void annotationBasedExcelMappingDriver()
+            throws ExcelMapperException, IOException, InvalidFormatException {
 
         ExcelMapper<AnnotatedRow> excelMapper = new ExcelMapper<>(
-                new AnnotationBasedExcelMappingDriver<>(
-                        AnnotatedRow.class
-                ),
-                new XSSFWorkbookFactory(),
-                new FirstRowColumnHeaderProvider(),
-                new ValueFormatterProvider(),
-                new ExcelMapperOptions(false, false, true)
+                new ObjectMappingDriver<>(
+                        AnnotatedRow.class,
+                        new ValueFormatterProvider()
+                )
         );
 
-        smokeTestDriver(excelMapper);
-    }
-
-    @Test
-    void annotationBasedExcelMappingDriverDoNotHaltOnBlank() throws ExcelMapperException, IOException, InvalidFormatException {
-
-        ExcelMapper<AnnotatedRow> excelMapper = new ExcelMapper<>(
-                new AnnotationBasedExcelMappingDriver<>(
-                        AnnotatedRow.class
-                ),
-                new XSSFWorkbookFactory(),
-                new FirstRowColumnHeaderProvider(),
-                new ValueFormatterProvider(),
-                new ExcelMapperOptions(false, false, false)
-        );
-
-        smokeTestDriver(excelMapper);
+        driverSmokeTest(excelMapper);
     }
 
     @Test
     void customExcelMappingDriver() throws ExcelMapperException, IOException, InvalidFormatException {
 
-        ExcelMapper<SampleParsedRow> excelMapper = new ExcelMapper<>(
-                new CustomExcelMappingDriver(),
-                new XSSFWorkbookFactory(),
-                new FirstRowColumnHeaderProvider(),
-                new ValueFormatterProvider(),
-                new ExcelMapperOptions()
-        );
+        ExcelMapper<SampleParsedRow> excelMapper = new ExcelMapper<>(new CustomExcelMappingDriver());
 
-        smokeTestDriver(excelMapper);
+        driverSmokeTest(excelMapper);
     }
 
-    private <T> void smokeTestDriver(ExcelMapper<T> excelMapper)
+    private <T> void driverSmokeTest(ExcelMapper<T> excelMapper)
             throws IOException, InvalidFormatException, ExcelMapperException {
 
         MappedResult<T> result = excelMapper.read(file);
@@ -97,13 +71,14 @@ class ExcelMappingDriverTest {
         assertNotNull(rows);
 
         MappedStatistic statistic = result.getStatistic();
-//        assertEquals(statistic.getSuccessRowCount(), rows.size());
-//        assertEquals(statistic.getFailedRowCount(), 0);
+
+        assertEquals(statistic.getSuccessRowCount(), rows.size());
+        assertEquals(statistic.getFailedRowCount(), 0);
 
         rows.forEach(row -> {
 
-//            assertSame(row.getStatus(), RowResultStatus.SUCCESS);
-//            assertNotNull(row.getData());
+            assertSame(row.getStatus(), RowResultStatus.SUCCESS);
+            assertNotNull(row.getData());
         });
     }
 

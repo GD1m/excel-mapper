@@ -2,28 +2,21 @@ package ru.gdim.excelmapper.mapper.format;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import ru.gdim.excelmapper.exception.InvalidCellFormatException;
 
 public class StringFormatter implements ValueFormatter<String> {
 
     @Override
-    public Class<String> type() {
+    public Class<String> valueType() {
 
         return String.class;
     }
 
     @Override
-    public String format(Cell cell) throws InvalidCellFormatException {
+    public String format(Cell cell) {
 
         DataFormatter dataFormatter = new DataFormatter();
 
-        try {
-
-            return dataFormatter.formatCellValue(cell);
-        } catch (RuntimeException e) {
-
-            throw new InvalidCellFormatException(cell, e);
-        }
+        return dataFormatter.formatCellValue(cell);
     }
 
 }

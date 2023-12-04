@@ -1,33 +1,19 @@
 package ru.gdim.excelmapper.mapper.format;
 
 import org.apache.poi.ss.usermodel.Cell;
-import ru.gdim.excelmapper.exception.InvalidCellFormatException;
 
 public class DoubleFormatter implements ValueFormatter<Double> {
 
-    private static final DoubleFormatter INSTANCE = new DoubleFormatter();
-
-    public static Double formatValue(Cell cell) throws InvalidCellFormatException {
-
-        return INSTANCE.format(cell);
-    }
-
     @Override
-    public Class<Double> type() {
+    public Class<Double> valueType() {
 
         return Double.class;
     }
 
     @Override
-    public Double format(Cell cell) throws InvalidCellFormatException {
+    public Double format(Cell cell) {
 
-        try {
-
-            return (cell != null) ? cell.getNumericCellValue() : null;
-        } catch (Exception e) {
-
-            throw new InvalidCellFormatException(cell, e);
-        }
+        return (cell != null) ? cell.getNumericCellValue() : null;
     }
 
 }

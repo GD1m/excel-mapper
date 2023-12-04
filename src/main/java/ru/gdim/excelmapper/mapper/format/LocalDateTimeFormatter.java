@@ -2,20 +2,20 @@ package ru.gdim.excelmapper.mapper.format;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class LocalDateFormatter implements ValueFormatter<LocalDate> {
+public class LocalDateTimeFormatter implements ValueFormatter<LocalDateTime> {
 
     @Override
-    public Class<LocalDate> valueType() {
+    public Class<LocalDateTime> valueType() {
 
-        return LocalDate.class;
+        return LocalDateTime.class;
     }
 
     @Override
-    public LocalDate format(Cell cell) {
+    public LocalDateTime format(Cell cell) {
 
         Date value = new DateFormatter().format(cell);
 
@@ -23,7 +23,7 @@ public class LocalDateFormatter implements ValueFormatter<LocalDate> {
                 ? value
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
-                .toLocalDate()
+                .toLocalDateTime()
                 : null;
     }
 

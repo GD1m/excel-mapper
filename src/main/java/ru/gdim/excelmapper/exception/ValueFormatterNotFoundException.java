@@ -1,6 +1,6 @@
 package ru.gdim.excelmapper.exception;
 
-public final class ValueFormatterNotFoundException extends ExcelMapperException {
+public class ValueFormatterNotFoundException extends ExcelMapperException {
 
     public ValueFormatterNotFoundException(Class<?> type) {
 

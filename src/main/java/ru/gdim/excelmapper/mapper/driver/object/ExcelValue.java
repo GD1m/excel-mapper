@@ -1,4 +1,4 @@
-package ru.gdim.excelmapper.mapper.driver.annotation;
+package ru.gdim.excelmapper.mapper.driver.object;
 
 import ru.gdim.excelmapper.mapper.format.ValueFormatter;
 

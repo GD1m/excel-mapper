@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
-import ru.gdim.excelmapper.exception.InvalidCellFormatException;
 import ru.gdim.excelmapper.mapper.format.StringFormatter;
 
 import java.util.Collection;
@@ -19,7 +18,7 @@ import java.util.Set;
 /**
  * Ищет заголовки в первой непустой строке
  */
-public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider {
+public class FirstRowColumnHeaderProvider implements ColumnHeaderProvider {
 
     private static final Logger log = LoggerFactory.getLogger(FirstRowColumnHeaderProvider.class);
 
@@ -117,7 +116,7 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
         try {
 
             return new StringFormatter().format(cell);
-        } catch (InvalidCellFormatException e) {
+        } catch (RuntimeException e) {
 
             log.warn(
                     "Пропущена ячейка с некорректным форматом во время парсинга заголовков в ячейке'{}'",
@@ -132,15 +131,15 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
     /**
      * Поиск колонки по заголовку
      *
-     * @param cellValue значение ячейки
-     * @param columns   колонки таблицы excel
+     * @param columnHeaderTitle заголовок колонки
+     * @param columns           колонки таблицы excel
      * @return представление excel колонки, если значение ячейки соответствует какому-либо заголовку
      */
-    private ExcelColumn findColumnByTitle(String cellValue, Collection<ExcelColumn> columns) {
+    private ExcelColumn findColumnByTitle(String columnHeaderTitle, Collection<ExcelColumn> columns) {
 
         return columns
                 .stream()
-                .filter(column -> Objects.equals(column.getHeaderTitle(), cellValue))
+                .filter(column -> Objects.equals(column.getHeaderTitle(), columnHeaderTitle))
                 .findFirst()
                 .orElse(null);
     }

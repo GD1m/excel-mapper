@@ -3,13 +3,12 @@ plugins {
     id 'java-library'
 }
 
-sourceCompatibility = 8
-targetCompatibility = 8
-
 group 'ru.gdim.excelmapper'
 version = "${currentVersion}" // TODO version
 
 tasks.withType(JavaCompile) {
+    sourceCompatibility = 8
+    targetCompatibility = 8
     options.encoding = "UTF-8"
 }
 tasks.withType(Javadoc) {

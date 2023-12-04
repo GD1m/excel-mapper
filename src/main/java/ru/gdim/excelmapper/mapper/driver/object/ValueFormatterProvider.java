@@ -1,13 +1,13 @@
-package ru.gdim.excelmapper.mapper.format;
+package ru.gdim.excelmapper.mapper.driver.object;
 
 import ru.gdim.excelmapper.exception.ValueFormatterNotFoundException;
+import ru.gdim.excelmapper.mapper.format.*;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-@SuppressWarnings("unused")
-public final class ValueFormatterProvider {
+public class ValueFormatterProvider {
 
     private Collection<ValueFormatter<?>> valueFormatters;
 
@@ -41,16 +41,6 @@ public final class ValueFormatterProvider {
         this.valueFormatters.addAll(valueFormatters);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> ValueFormatter<T> getFormatterForType(Class<T> valueType) throws ValueFormatterNotFoundException {
-
-        return (ValueFormatter<T>) valueFormatters
-                .stream()
-                .filter(formatter -> formatter.type().isAssignableFrom(valueType))
-                .findFirst()
-                .orElseThrow(() -> new ValueFormatterNotFoundException(valueType));
-    }
-
     public ValueFormatter<?> getFormatterOfType(Class<?> valueFormatterType) throws ValueFormatterNotFoundException {
 
         return valueFormatters
@@ -60,13 +50,28 @@ public final class ValueFormatterProvider {
                 .orElseThrow(() -> new ValueFormatterNotFoundException(valueFormatterType));
     }
 
-    public void useDefaultFormatters() {
+    @SuppressWarnings("unchecked")
+    public <T> ValueFormatter<T> getFormatterForType(Class<T> valueType) throws ValueFormatterNotFoundException {
+
+        return (ValueFormatter<T>) valueFormatters
+                .stream()
+                .filter(formatter -> formatter.valueType().isAssignableFrom(valueType))
+                .findFirst()
+                .orElseThrow(() -> new ValueFormatterNotFoundException(valueType));
+    }
+
+    public void useDefaultFormatters() { // TODO move it somewhere
 
         valueFormatters = new HashSet<>();
 
-        valueFormatters.add(new LongFormatter());
         valueFormatters.add(new BigDecimalFormatter());
+        valueFormatters.add(new BooleanFormatter());
+        valueFormatters.add(new DateFormatter());
+        valueFormatters.add(new DoubleFormatter());
+        valueFormatters.add(new FloatFormatter());
         valueFormatters.add(new LocalDateFormatter());
+        valueFormatters.add(new LocalDateTimeFormatter());
+        valueFormatters.add(new LongFormatter());
         valueFormatters.add(new StringFormatter());
     }
 

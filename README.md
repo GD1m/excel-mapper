@@ -13,7 +13,14 @@ TODO:
 - ExcelMapperFactory
 - ObjectMapperDriver
 - HashMapDriver
-- Delombok
+- ~~Delombok~~
 - Test formatter collision for type subclasses
-- @Nullable/@NotNull]
+- @Nullable/@NotNull
 - Make wrapper with cell address/value
+- Add records support
+- requireNonNull -> IllegalArgumentException
+- move format package to annotated driver?
+- handle org.apache.poi.ss.usermodel.CellType
+- rowIndex -> rowNumber?
+- METHOD retention
+- check equals/hashCode/toString

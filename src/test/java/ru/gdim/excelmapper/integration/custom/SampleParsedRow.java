@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public final class SampleParsedRow {
+public class SampleParsedRow {
 
     private Long longValue;
     private BigDecimal bigDecimal;

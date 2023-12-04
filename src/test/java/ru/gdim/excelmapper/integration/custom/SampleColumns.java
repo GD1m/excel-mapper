@@ -6,9 +6,9 @@ import java.util.StringJoiner;
 
 public enum SampleColumns implements ExcelColumn {
 
-    LONG("Колонка long", true),
-    BIG_DECIMAL("Колонка big decimal", false),
-    DATE_AFTER_BLANK("Колонка после пропуска с датой", false);
+    INT_COLUMN("Int column", true),
+    FLOAT_COLUMN("Float column", false),
+    BIG_DECIMAL_COLUMN("Big Decimal column", false);
 
     private final String headerTitle;
     private final boolean required;

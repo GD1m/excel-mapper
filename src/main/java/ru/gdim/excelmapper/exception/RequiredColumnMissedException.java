@@ -6,7 +6,7 @@ import ru.gdim.excelmapper.excel.column.ExcelColumn;
 /**
  * Не найдена обязательная колонка в строке
  */
-public final class RequiredColumnMissedException extends ExcelMapperException {
+public class RequiredColumnMissedException extends ExcelMapperException {
 
     public RequiredColumnMissedException(Row row, ExcelColumn column) {
 

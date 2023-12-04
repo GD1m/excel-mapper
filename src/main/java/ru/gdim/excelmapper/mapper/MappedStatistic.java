@@ -3,7 +3,7 @@ package ru.gdim.excelmapper.mapper;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public final class MappedStatistic {
+public class MappedStatistic {
 
     /**
      * Количество успешно импортированных строк

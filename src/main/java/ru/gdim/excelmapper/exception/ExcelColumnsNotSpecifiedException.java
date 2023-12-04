@@ -1,6 +1,6 @@
 package ru.gdim.excelmapper.exception;
 
-public final class ExcelColumnsNotSpecifiedException extends ExcelMapperException {
+public class ExcelColumnsNotSpecifiedException extends ExcelMapperException {
 
     public ExcelColumnsNotSpecifiedException() {
 

@@ -3,9 +3,8 @@ package ru.gdim.excelmapper.mapper.driver;
 import org.apache.poi.ss.usermodel.Row;
 import ru.gdim.excelmapper.excel.column.ColumnHeaderBag;
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
-import ru.gdim.excelmapper.exception.InvalidCellFormatException;
 import ru.gdim.excelmapper.exception.RequiredColumnMissedException;
-import ru.gdim.excelmapper.mapper.format.ValueFormatterProvider;
+import ru.gdim.excelmapper.exception.RowProcessingException;
 
 import java.util.Collection;
 
@@ -21,20 +20,18 @@ public interface ExcelMappingDriver<T> {
      *
      * @return коллекция представлений excel колонок
      */
-    Collection<ExcelColumn> getColumns();
+    Collection<ExcelColumn> getExpectedColumns();
 
     /**
      * Импорт строки excel (Логика мапинга строки excel в заданный тип <T>)
      *
-     * @param row                    строка excel
-     * @param columnBag              контейнер найденных колонок по заголовкам
-     * @param valueFormatterProvider // TODO
+     * @param row            строка excel
+     * @param foundColumnBag контейнер найденных колонок по заголовкам
      * @return DTO с импортированными данными
-     * @throws InvalidCellFormatException    если в ячейке excel некорректное значение
+     * @throws RowProcessingException        если в строке excel некорректное значение
      * @throws RequiredColumnMissedException если в строке excel не было найдено значение обязательной колонки
      *                                       ({@link ExcelColumn#isRequired()} )
      */
-    T readData(Row row, ColumnHeaderBag columnBag, ValueFormatterProvider valueFormatterProvider)
-            throws InvalidCellFormatException, RequiredColumnMissedException; // TODO make context dto ?
+    T readData(Row row, ColumnHeaderBag foundColumnBag) throws RowProcessingException, RequiredColumnMissedException;
 
 }

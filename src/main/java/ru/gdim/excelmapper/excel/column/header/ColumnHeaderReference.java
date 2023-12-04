@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 /**
  * Данные о заголовке колонки таблицы excel
  */
-public final class ColumnHeaderReference {
+public class ColumnHeaderReference {
 
     /**
      * Колонка excel
@@ -32,7 +32,6 @@ public final class ColumnHeaderReference {
         return column;
     }
 
-    @SuppressWarnings("unused")
     public Cell getCell() {
 
         return cell;

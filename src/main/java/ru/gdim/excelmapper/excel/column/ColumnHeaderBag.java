@@ -1,7 +1,10 @@
 package ru.gdim.excelmapper.excel.column;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
 import ru.gdim.excelmapper.exception.RequiredColumnMissedException;
 
@@ -12,7 +15,9 @@ import java.util.StringJoiner;
 /**
  * Контейнер найденных заголовков колонок
  */
-public final class ColumnHeaderBag {
+public class ColumnHeaderBag {
+
+    private final static Logger log = LoggerFactory.getLogger(ColumnHeaderBag.class);
 
     /**
      * Найденные заголовки колонок
@@ -34,10 +39,16 @@ public final class ColumnHeaderBag {
      */
     public Cell getCellFromRow(Row row, ExcelColumn column) throws RequiredColumnMissedException {
 
+        return getCellFromRow(row, column, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+    }
+
+    public Cell getCellFromRow(Row row, ExcelColumn column, Row.MissingCellPolicy missingCellPolicy)
+            throws RequiredColumnMissedException {
+
         Integer columnIndex = getColumnIndex(column);
 
         Cell cell = (columnIndex != null)
-                ? row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL)
+                ? row.getCell(columnIndex, missingCellPolicy)
                 : null;
 
         checkBlankIfColumnRequired(row, column, cell);
@@ -58,12 +69,23 @@ public final class ColumnHeaderBag {
         return (columnHeaderReference != null) ? columnHeaderReference.getColumnIndex() : null;
     }
 
-    private void checkBlankIfColumnRequired(Row row, ExcelColumn column, Cell cell) throws RequiredColumnMissedException {
+    private void checkBlankIfColumnRequired(Row row, ExcelColumn column, Cell cell)
+            throws RequiredColumnMissedException {
 
-        if (column.isRequired() && cell == null) {
+        if (column.isRequired() && isCellBlank(cell)) {
 
             throw new RequiredColumnMissedException(row, column);
         }
+    }
+
+    private boolean isCellBlank(Cell cell) { // TODO handle formatted null value
+
+        if (cell == null) {
+
+            return true;
+        }
+
+        return cell.getCellType() == CellType.BLANK;
     }
 
     /**
