@@ -1,7 +1,6 @@
 package ru.gdim.excelmapper.mapper.driver.annotation;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import ru.gdim.excelmapper.excel.column.ColumnHeaderBag;
@@ -20,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -202,7 +202,12 @@ public final class AnnotationBasedExcelMappingDriver<T> implements ExcelMappingD
 
     private String composeSetterName(String fieldName) {
 
-        return "set" + StringUtils.capitalize(fieldName);
+        return "set" + capitalize(fieldName);
+    }
+
+    private String capitalize(String fieldName) {
+
+        return Objects.requireNonNull(fieldName).substring(0, 1).toUpperCase() + fieldName.substring(1);
     }
 
     private void invokeSetter(Method setter, Object value, T result) {

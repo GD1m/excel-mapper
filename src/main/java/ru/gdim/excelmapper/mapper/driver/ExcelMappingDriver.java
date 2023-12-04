@@ -35,6 +35,6 @@ public interface ExcelMappingDriver<T> {
      *                                       ({@link ExcelColumn#isRequired()} )
      */
     T readData(Row row, ColumnHeaderBag columnBag, ValueFormatterProvider valueFormatterProvider)
-            throws InvalidCellFormatException, RequiredColumnMissedException;
+            throws InvalidCellFormatException, RequiredColumnMissedException; // TODO make context dto ?
 
 }

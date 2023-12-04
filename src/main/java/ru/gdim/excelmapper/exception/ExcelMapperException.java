@@ -1,6 +1,6 @@
 package ru.gdim.excelmapper.exception;
 
-public class ExcelMapperException extends Exception {
+public abstract class ExcelMapperException extends Exception {
 
     public ExcelMapperException(String message) {
 

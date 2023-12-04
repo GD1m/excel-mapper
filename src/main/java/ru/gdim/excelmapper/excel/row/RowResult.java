@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public final class MappedRow<T> {
+public final class RowResult<T> {
 
     /**
      * Индекс excel строки (начиная с 0, пустые строки пропускаются)
      */
     private long rowIndex;
 
-    private RowStatus status;
+    private RowResultStatus status;
 
     /**
      * Результат с импортированными данными

@@ -15,4 +15,5 @@ TODO:
 - HashMapDriver
 - Delombok
 - Test formatter collision for type subclasses
-- @Nullable/@NotNull
+- @Nullable/@NotNull]
+- Make wrapper with cell address/value

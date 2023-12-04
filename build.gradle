@@ -7,7 +7,7 @@ sourceCompatibility = 8
 targetCompatibility = 8
 
 group 'ru.gdim.excelmapper'
-version '1.0.0-SNAPSHOT'
+version = "${currentVersion}" // TODO version
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
@@ -21,20 +21,18 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation 'org.apache.poi:poi:5.2.4' // TODO support other versions
     implementation 'org.apache.poi:poi-ooxml:5.2.4'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
-    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation 'org.slf4j:slf4j-api:2.0.9'// TODO remove
 
-    compileOnly 'org.projectlombok:lombok:1.18.26'
+    compileOnly 'org.projectlombok:lombok:1.18.26'// TODO remove
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     testCompileOnly 'org.projectlombok:lombok:1.18.26'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+    testRuntimeOnly 'org.slf4j:slf4j-simple:2.0.9' // TODO remove
 }
 
 test {

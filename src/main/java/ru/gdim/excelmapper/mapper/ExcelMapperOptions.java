@@ -1,23 +1,22 @@
 package ru.gdim.excelmapper.mapper;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public final class ExcelMapperOptions {
 
     private boolean failOnError = false;
-    private boolean failOnRequiredIsMissed = false;
+    private boolean failOnRequiredColumnMissed = false;
     private boolean haltOnBlankRow = true;
+    private int maxBlankRowsAtARow; // TODO name, implement
 
     public ExcelMapperOptions() {
     }
 
-    public ExcelMapperOptions(boolean failOnError, boolean failOnRequiredIsMissed, boolean haltOnBlankRow) {
+    public ExcelMapperOptions(boolean failOnError, boolean failOnRequiredColumnMissed, boolean haltOnBlankRow) {
 
         this.failOnError = failOnError;
-        this.failOnRequiredIsMissed = failOnRequiredIsMissed;
+        this.failOnRequiredColumnMissed = failOnRequiredColumnMissed;
         this.haltOnBlankRow = haltOnBlankRow;
     }
 
@@ -33,14 +32,14 @@ public final class ExcelMapperOptions {
         return this;
     }
 
-    public boolean isFailOnRequiredIsMissed() {
+    public boolean isFailOnRequiredColumnMissed() {
 
-        return this.failOnRequiredIsMissed;
+        return this.failOnRequiredColumnMissed;
     }
 
-    public ExcelMapperOptions setFailOnRequiredIsMissed(boolean failOnRequiredIsMissed) {
+    public ExcelMapperOptions setFailOnRequiredColumnMissed(boolean failOnRequiredColumnMissed) {
 
-        this.failOnRequiredIsMissed = failOnRequiredIsMissed;
+        this.failOnRequiredColumnMissed = failOnRequiredColumnMissed;
 
         return this;
     }
@@ -66,27 +65,24 @@ public final class ExcelMapperOptions {
 
         ExcelMapperOptions that = (ExcelMapperOptions) o;
 
-        return new EqualsBuilder()
-                .append(failOnError, that.failOnError)
-                .append(failOnRequiredIsMissed, that.failOnRequiredIsMissed)
-                .append(haltOnBlankRow, that.haltOnBlankRow)
-                .isEquals();
+        return failOnError == that.failOnError
+                && failOnRequiredColumnMissed == that.failOnRequiredColumnMissed
+                && haltOnBlankRow == that.haltOnBlankRow;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hashCode(this);
+        return Objects.hash(failOnError, failOnRequiredColumnMissed, haltOnBlankRow);
     }
 
     @Override
     public String toString() {
 
-        return new ToStringBuilder(this)
-                .append("failOnError", failOnError)
-                .append("failOnRequiredIsMissed", failOnRequiredIsMissed)
-                .append("haltOnBlankRow", haltOnBlankRow)
+        return new StringJoiner(", ", ExcelMapperOptions.class.getSimpleName() + "[", "]")
+                .add("failOnError=" + failOnError)
+                .add("failOnRequiredColumnMissed=" + failOnRequiredColumnMissed)
+                .add("haltOnBlankRow=" + haltOnBlankRow)
                 .toString();
     }
-
 }

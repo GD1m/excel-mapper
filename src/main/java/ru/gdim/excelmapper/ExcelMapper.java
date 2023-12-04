@@ -1,20 +1,18 @@
 package ru.gdim.excelmapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.gdim.excelmapper.excel.column.ColumnHeaderBag;
 import ru.gdim.excelmapper.excel.column.ExcelColumn;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
 import ru.gdim.excelmapper.excel.column.header.provider.ColumnHeaderProvider;
 import ru.gdim.excelmapper.excel.column.header.provider.FirstRowColumnHeaderProvider;
-import ru.gdim.excelmapper.excel.row.MappedRow;
-import ru.gdim.excelmapper.excel.row.RowStatus;
+import ru.gdim.excelmapper.excel.row.RowResult;
+import ru.gdim.excelmapper.excel.row.RowResultStatus;
 import ru.gdim.excelmapper.excel.workbook.WorkbookFactory;
 import ru.gdim.excelmapper.excel.workbook.XSSFWorkbookFactory;
 import ru.gdim.excelmapper.exception.*;
@@ -27,19 +25,18 @@ import ru.gdim.excelmapper.mapper.format.ValueFormatterProvider;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Мапинг данных из excel
  *
  * @param <T> тип объекта с импортированными данными
  */
+@Slf4j
 public final class ExcelMapper<T> {
-
-    private static final Logger log = LoggerFactory.getLogger(ExcelMapper.class);
 
     private final ExcelMappingDriver<T> excelMappingDriver;
     private final WorkbookFactory workbookFactory;
@@ -250,45 +247,35 @@ public final class ExcelMapper<T> {
     }
 
     private MappedResult<T> processRows(Sheet sheet, Collection<ColumnHeaderReference> foundColumnHeaders)
-            throws ExcelMapperException {
+            throws ExcelMapperException {  // TODO detail throws
 
+        List<RowResult<T>> rowResults = new ArrayList<>();
         MappedStatistic statistic = new MappedStatistic();
-
-        Set<MappedRow<T>> rowResults = new LinkedHashSet<>();
 
         for (int rowIndex = composeStartRowIndex(foundColumnHeaders); rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 
-            Row row = sheet.getRow(rowIndex);
+            RowResult<T> rowResult = processRow(
+                    sheet,
+                    rowIndex,
+                    new ColumnHeaderBag(foundColumnHeaders)
+            );
 
-            if (row == null) {
+            rowResults.add(rowResult);
 
-                log.debug("Пропущена несуществующая строка excel ({})", rowIndex);
+            RowResultStatus rowResultStatus = rowResult.getStatus();
+            updateStatistic(statistic, rowResultStatus); // TODO do not count skipped rows
 
-                continue;
-            }
+            if (
+                    options.isHaltOnBlankRow() && (
+                            rowResultStatus == RowResultStatus.BLANK
+                                    || rowResultStatus == RowResultStatus.REQUIRED_COLUMN_MISSED
+                    )
+            ) {
 
-            MappedRow<T> rowResult;
-            try {
-
-                rowResult = processRow(
-                        row,
-                        new ColumnHeaderBag(foundColumnHeaders)
-                );
-            } catch (BlankRowException e) {
-
-                Throwable rootCause = ExceptionUtils.getRootCause(e);
-                String eMessage = e.getMessage();
-
-                String message = (rootCause != null)
-                        ? eMessage + ": " + rootCause.getMessage()
-                        : eMessage;
-
-                log.debug("Маппинг остановлен на пустой строке excel ({}): {}", rowIndex, message);
+                log.debug("Маппинг остановлен на строке с индексом {}: {}", rowIndex, rowResult);
 
                 break;
             }
-
-            updateResults(rowResults, statistic, rowResult);
         }
 
         return new MappedResult<>(rowResults, statistic);
@@ -308,13 +295,20 @@ public final class ExcelMapper<T> {
     /**
      * Обработка excel строки
      *
-     * @param row             строка excel
+     * @param sheet           лист excel
+     * @param rowIndex        индекс строки excel
      * @param columnHeaderBag контейнер найденных колонок по заголовку
      * @return результат импорта excel строки
      */
-    private MappedRow<T> processRow(Row row, ColumnHeaderBag columnHeaderBag) throws ExcelMapperException { // TODO detail throws
+    private RowResult<T> processRow(Sheet sheet, int rowIndex, ColumnHeaderBag columnHeaderBag)
+            throws InvalidCellFormatException, RequiredColumnMissedException {
 
-        int rowIndex = row.getRowNum();
+        Row row = sheet.getRow(rowIndex);
+
+        if (row == null) {
+
+            return handleBlankRow(rowIndex);
+        }
 
         try {
 
@@ -322,37 +316,14 @@ public final class ExcelMapper<T> {
 
             if (data == null) {
 
-                throw new BlankRowException(rowIndex);
+                return handleBlankRow(rowIndex);
             }
 
             return handleSuccessRow(rowIndex, data);
-        } catch (BlankRowException e) { // TODO move catches to processRows()
-
-            if (options.isHaltOnBlankRow()) {
-
-                throw e;
-            }
-
-            return handleSkippedRow(rowIndex, e);
         } catch (RequiredColumnMissedException e) {
 
-            if (options.isFailOnRequiredIsMissed()) {
-
-                throw e;
-            }
-
-            if (options.isHaltOnBlankRow()) {
-
-                throw new BlankRowException(rowIndex, e);
-            }
-
-            return handleFailedRow(rowIndex, e);
-        } catch (Exception e) {
-
-            if (options.isFailOnError()) {
-
-                throw e;
-            }
+            return handleRequiredColumnMissedRow(rowIndex, e);
+        } catch (RuntimeException e) {
 
             return handleFailedRow(rowIndex, e);
         }
@@ -365,52 +336,63 @@ public final class ExcelMapper<T> {
         return excelMappingDriver.readData(row, columnHeaderBag, valueFormatterProvider);
     }
 
-    private MappedRow<T> handleSuccessRow(int rowIndex, T data) {
+    private RowResult<T> handleBlankRow(int rowIndex) {
+
+        log.debug("Пустая строка ({})", rowIndex);
+
+        return new RowResult<>(rowIndex, RowResultStatus.BLANK, null, null);
+    }
+
+    private RowResult<T> handleSuccessRow(int rowIndex, T data) {
 
         log.debug("Строка успешно импортирована ({}): {}", rowIndex, data);
 
-        return new MappedRow<>(rowIndex, RowStatus.SUCCESS, data, null);
+        return new RowResult<>(rowIndex, RowResultStatus.SUCCESS, data, null);
     }
 
-    private MappedRow<T> handleSkippedRow(int rowIndex, Exception e) {
+    private RowResult<T> handleRequiredColumnMissedRow(int rowIndex, RequiredColumnMissedException e)
+            throws RequiredColumnMissedException {
 
-        log.warn("Пропущена строка ({}): {}", rowIndex, e.getMessage());
+        log.warn("Не найдена обязательная колонка ({}): ", rowIndex);
 
-        return new MappedRow<>(rowIndex, RowStatus.BLANK, null, e);
+        if (options.isFailOnRequiredColumnMissed()) {
+
+            throw e;
+        }
+
+        return new RowResult<>(rowIndex, RowResultStatus.REQUIRED_COLUMN_MISSED, null, e);
     }
 
-    private MappedRow<T> handleFailedRow(int rowIndex, Exception e) {
+    private RowResult<T> handleFailedRow(int rowIndex, RuntimeException e) {
 
         log.error("Ошибка при импорте строки ({}): ", rowIndex, e);
 
-        return new MappedRow<>(rowIndex, RowStatus.FAILED, null, e);
+        if (options.isFailOnError()) {
+
+            throw e;
+        }
+
+        return new RowResult<>(rowIndex, RowResultStatus.FAILED, null, e);
     }
 
-    private void updateResults(Set<MappedRow<T>> rowResults, MappedStatistic statistic, MappedRow<T> rowResult) {
+    private void updateStatistic(MappedStatistic statistic, RowResultStatus mappedStatus) {
 
-        RowStatus mappedStatus = rowResult.getStatus();
         switch (mappedStatus) {
 
             case SUCCESS:
                 statistic.setSuccessRowCount(statistic.getSuccessRowCount() + 1);
-
-                rowResults.add(rowResult);
-                break;
-
-            case FAILED:
-                statistic.setFailedRowCount(statistic.getFailedRowCount() + 1);
-
-                rowResults.add(rowResult);
                 break;
 
             case BLANK:
                 statistic.setBlankRowCount(statistic.getBlankRowCount() + 1);
-
                 break;
 
             case REQUIRED_COLUMN_MISSED:
                 statistic.setRequiredColumnMissedRowCount(statistic.getRequiredColumnMissedRowCount() + 1);
+                break;
 
+            case FAILED:
+                statistic.setFailedRowCount(statistic.getFailedRowCount() + 1);
                 break;
 
             default:

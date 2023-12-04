@@ -1,6 +1,5 @@
 package ru.gdim.excelmapper.mapper.format;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import ru.gdim.excelmapper.exception.InvalidCellFormatException;
@@ -20,10 +19,8 @@ public class StringFormatter implements ValueFormatter<String> {
 
         try {
 
-            String value = dataFormatter.formatCellValue(cell);
-
-            return StringUtils.isEmpty(value) ? null : value;
-        } catch (Exception e) {
+            return dataFormatter.formatCellValue(cell);
+        } catch (RuntimeException e) {
 
             throw new InvalidCellFormatException(cell, e);
         }

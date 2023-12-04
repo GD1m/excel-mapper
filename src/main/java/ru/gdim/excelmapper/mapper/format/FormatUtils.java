@@ -1,6 +1,5 @@
 package ru.gdim.excelmapper.mapper.format;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import ru.gdim.excelmapper.exception.InvalidCellFormatException;
@@ -17,11 +16,6 @@ import java.util.Date;
  * Утилита для парсинга разных типов данных из excel ячейки
  */
 public final class FormatUtils { // TODO refactor/cleanup
-
-    public static boolean isBlank(Cell cell) throws InvalidCellFormatException {
-
-        return cell == null || StringUtils.isBlank(stringValue(cell));
-    }
 
     public static <T> T format(Cell cell, Class<T> valueType, ValueFormatterProvider valueFormatterProvider)
             throws ValueFormatterNotFoundException, InvalidCellFormatException {

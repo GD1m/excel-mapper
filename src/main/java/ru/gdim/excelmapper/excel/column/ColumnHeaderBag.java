@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import ru.gdim.excelmapper.excel.column.header.ColumnHeaderReference;
-import ru.gdim.excelmapper.exception.InvalidCellFormatException;
 import ru.gdim.excelmapper.exception.RequiredColumnMissedException;
-import ru.gdim.excelmapper.mapper.format.FormatUtils;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -39,7 +37,9 @@ public final class ColumnHeaderBag {
 
         Integer columnIndex = getColumnIndex(column);
 
-        Cell cell = (columnIndex != null) ? row.getCell(columnIndex) : null;
+        Cell cell = (columnIndex != null)
+                ? row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL)
+                : null;
 
         checkBlankIfColumnRequired(row, column, cell);
 
@@ -61,15 +61,9 @@ public final class ColumnHeaderBag {
 
     private void checkBlankIfColumnRequired(Row row, ExcelColumn column, Cell cell) throws RequiredColumnMissedException {
 
-        try {
+        if (column.isRequired() && cell == null) {
 
-            if (column.isRequired() && FormatUtils.isBlank(cell)) {
-
-                throw new RequiredColumnMissedException(row, column);
-            }
-        } catch (InvalidCellFormatException e) {
-
-            throw new RequiredColumnMissedException(row, column, e);
+            throw new RequiredColumnMissedException(row, column);
         }
     }
 

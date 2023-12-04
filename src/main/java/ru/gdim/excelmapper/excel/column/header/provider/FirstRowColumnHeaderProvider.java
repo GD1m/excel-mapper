@@ -2,7 +2,6 @@ package ru.gdim.excelmapper.excel.column.header.provider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -51,7 +50,7 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
 
         for (short columnIndex = row.getFirstCellNum(); columnIndex < row.getLastCellNum(); columnIndex++) {
 
-            Cell cell = row.getCell(columnIndex);
+            Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
 
             if (cell == null) {
 
@@ -84,7 +83,7 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
 
         String cellValue = parseCellValue(cell);
 
-        if (StringUtils.isBlank(cellValue)) {
+        if (cellValue == null) {
 
             return null;
         }
@@ -117,9 +116,7 @@ public final class FirstRowColumnHeaderProvider implements ColumnHeaderProvider 
 
         try {
 
-            return StringUtils.trim(
-                    new StringFormatter().format(cell)
-            );
+            return new StringFormatter().format(cell);
         } catch (InvalidCellFormatException e) {
 
             log.warn(
