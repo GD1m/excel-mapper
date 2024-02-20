@@ -10,25 +10,22 @@ import java.util.StringJoiner;
 
 public class AnnotatedRow {
 
-    @ExcelValue(columnHeaderTitle = "Int column", isRequired = false, valueFormatter = {})
+    @ExcelValue(columnHeaderTitle = "Custom boolean", valueFormatter = CustomBooleanFormatter.class)
+    private Boolean customBoolean;
+
+    @ExcelValue(columnHeaderTitle = "Int column")
     private Long longValue;
 
-    @ExcelValue(columnHeaderTitle = "Float column", isRequired = false, valueFormatter = {})
+    @ExcelValue(columnHeaderTitle = "Float column")
     private Float floatValue;
 
-    @ExcelValue(columnHeaderTitle = "Big Decimal column", isRequired = false, valueFormatter = {})
+    @ExcelValue(columnHeaderTitle = "Big Decimal column")
     private BigDecimal bigDecimal;
 
-    @ExcelValue(
-            columnHeaderTitle = "Datetime column",
-            isRequired = false
-    )
+    @ExcelValue(columnHeaderTitle = "Datetime column")
     private LocalDateTime localDateTime;
 
-    @ExcelValue(
-            columnHeaderTitle = "Date column",
-            isRequired = false
-    )
+    @ExcelValue(columnHeaderTitle = "Date column")
     private LocalDate localDate;
 
     @ExcelValue(columnHeaderTitle = "Boolean column")
@@ -36,6 +33,16 @@ public class AnnotatedRow {
 
     @ExcelValue(columnHeaderTitle = "Колонка UTF-8 column")
     private String stringValue;
+
+    public Boolean getCustomBoolean() {
+
+        return customBoolean;
+    }
+
+    public void setCustomBoolean(Boolean customBoolean) {
+
+        this.customBoolean = customBoolean;
+    }
 
     public Long getLongValue() {
 
@@ -116,7 +123,8 @@ public class AnnotatedRow {
 
         AnnotatedRow that = (AnnotatedRow) o;
 
-        return Objects.equals(longValue, that.longValue)
+        return Objects.equals(customBoolean, that.customBoolean)
+                && Objects.equals(longValue, that.longValue)
                 && Objects.equals(floatValue, that.floatValue)
                 && Objects.equals(bigDecimal, that.bigDecimal)
                 && Objects.equals(localDateTime, that.localDateTime)
@@ -128,13 +136,23 @@ public class AnnotatedRow {
     @Override
     public int hashCode() {
 
-        return Objects.hash(longValue, floatValue, bigDecimal, localDateTime, localDate, booleanValue, stringValue);
+        return Objects.hash(
+                customBoolean,
+                longValue,
+                floatValue,
+                bigDecimal,
+                localDateTime,
+                localDate,
+                booleanValue,
+                stringValue
+        );
     }
 
     @Override
     public String toString() {
 
         return new StringJoiner(", ", AnnotatedRow.class.getSimpleName() + "[", "]")
+                .add("customBoolean=" + customBoolean)
                 .add("longValue=" + longValue)
                 .add("floatValue=" + floatValue)
                 .add("bigDecimal=" + bigDecimal)

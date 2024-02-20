@@ -9,6 +9,7 @@ import ru.gdim.excelmapper.excel.row.RowResult;
 import ru.gdim.excelmapper.excel.row.RowResultStatus;
 import ru.gdim.excelmapper.exception.ExcelMapperException;
 import ru.gdim.excelmapper.integration.annotation.AnnotatedRow;
+import ru.gdim.excelmapper.integration.annotation.CustomBooleanFormatter;
 import ru.gdim.excelmapper.integration.custom.CustomExcelMappingDriver;
 import ru.gdim.excelmapper.integration.custom.SampleParsedRow;
 import ru.gdim.excelmapper.mapper.MappedResult;
@@ -42,10 +43,13 @@ class ExcelMappingDriverTest {
     void annotationBasedExcelMappingDriver()
             throws ExcelMapperException, IOException, InvalidFormatException {
 
+        ValueFormatterProvider valueFormatterProvider = new ValueFormatterProvider();
+        valueFormatterProvider.registerValueFormatter(new CustomBooleanFormatter());
+
         ExcelMapper<AnnotatedRow> excelMapper = new ExcelMapper<>(
                 new ObjectMappingDriver<>(
                         AnnotatedRow.class,
-                        new ValueFormatterProvider()
+                        valueFormatterProvider
                 )
         );
 
