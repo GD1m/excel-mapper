@@ -40,8 +40,6 @@ public class FirstRowColumnHeaderProvider implements ColumnHeaderProvider {
 
         if (row == null) {
 
-            log.error("На листе excel не найдены непустые строки");
-
             return columnHeaders;
         }
 

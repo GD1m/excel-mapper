@@ -193,7 +193,7 @@ public class ExcelMapper<T> {
 
         if (sheet == null) {
 
-            throw new SheetNotFoundException("Лист excel не найден по индексу: '" + sheetIndex + "'");
+            throw SheetNotFoundException.byIndex(sheetIndex);
         }
 
         return processSheet(sheet);
@@ -212,7 +212,7 @@ public class ExcelMapper<T> {
 
         if (sheet == null) {
 
-            throw new SheetNotFoundException("Лист excel не найден по имени: '" + sheetName + "'");
+            throw SheetNotFoundException.byName(sheetName);
         }
 
         return processSheet(sheet);
